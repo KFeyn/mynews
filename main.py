@@ -1,8 +1,9 @@
 import asyncio
 import logging
+import os
+
 import aioschedule
 import aiogram
-import os
 
 from parsing import get_articles_tds, get_articles_habr
 
@@ -24,7 +25,7 @@ async def sender(dp: aiogram.dispatcher.Dispatcher) -> None:
 
 
 async def scheduler(dp: aiogram.dispatcher.Dispatcher) -> None:
-    aioschedule.every(1).days.at('04:00').do(sender, dp=dp)
+    aioschedule.every(8).hours.do(sender, dp=dp)
     while True:
         await aioschedule.run_pending()
 
