@@ -6,11 +6,8 @@ import os
 
 import models
 
-global links_global
-links_global = []
 
-
-async def get_articles_habr() -> tp.List[models.Article]:
+async def get_articles_habr(links_global) -> tp.List[models.Article]:
     async with aiohttp.ClientSession() as session:
         await session.get('https://account.habr.com/login')
 
@@ -62,14 +59,14 @@ async def get_articles_habr() -> tp.List[models.Article]:
                 rating = el.find('span', {'data-test-id': 'votes-meter-value'}).text,
                 date = datetime.datetime.strptime(el.find('time').get('title'), '%Y-%m-%d, %H:%M')
 
-                if link[0] not in links_global:
+                if link[0] not in links_global and datetime.date.today() - datetime.timedelta(days=1) == date.date():
                     data.append((link[0], rating[0], date))
                     links_global.append(link[0])
 
     return [await models.Article.from_page(el) for el in data]
 
 
-async def get_articles_tds() -> tp.List[models.Article]:
+async def get_articles_tds(links_global) -> tp.List[models.Article]:
     async with aiohttp.ClientSession() as session:
         domain = 'https://towardsdatascience.com'
         news_page = await session.get(domain)
@@ -89,7 +86,7 @@ async def get_articles_tds() -> tp.List[models.Article]:
             date = datetime.datetime.strptime(str(datetime.datetime.now().year) + ' ' +
                                               article_soup.find('p', {'class': 'pw-published-date bn b bo bp co'}).text,
                                               '%Y %b %d')
-            if link not in links_global:
+            if link not in links_global and datetime.date.today() - datetime.timedelta(days=1) == date.date():
                 data.append((art, rating, date))
                 links_global.append(link)
 

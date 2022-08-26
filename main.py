@@ -9,10 +9,14 @@ from parsing import get_articles_tds, get_articles_habr
 
 logger = logging.getLogger(__name__)
 
+global links_global
+links_global = []
+
 
 async def sender(dp: aiogram.dispatcher.Dispatcher) -> None:
-    habr_links = await get_articles_habr()
-    tds_links = await get_articles_tds()
+
+    habr_links = await get_articles_habr(links_global)
+    tds_links = await get_articles_tds(links_global)
 
     links = habr_links + tds_links
 
@@ -25,7 +29,7 @@ async def sender(dp: aiogram.dispatcher.Dispatcher) -> None:
 
 
 async def scheduler(dp: aiogram.dispatcher.Dispatcher) -> None:
-    aioschedule.every(8).hours.do(sender, dp=dp)
+    aioschedule.every(4).hours.do(sender, dp=dp)
     while True:
         await aioschedule.run_pending()
 
@@ -44,4 +48,4 @@ dp = aiogram.Dispatcher(bot)
 
 
 if __name__ == '__main__':
-    aiogram.executor.start_polling(dispatcher=dp, on_startup=on_startup)
+    aiogram.executor.start_polling(dispatcher=dp, skip_updates=True, on_startup=on_startup)
