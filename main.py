@@ -29,7 +29,12 @@ async def sender(dp: aiogram.dispatcher.Dispatcher) -> None:
 
 
 async def scheduler(dp: aiogram.dispatcher.Dispatcher) -> None:
-    aioschedule.every(4).hours.do(sender, dp=dp)
+    aioschedule.every().day.at('04:00').do(sender, dp=dp)
+    aioschedule.every().day.at('08:00').do(sender, dp=dp)
+    aioschedule.every().day.at('12:00').do(sender, dp=dp)
+    aioschedule.every().day.at('16:00').do(sender, dp=dp)
+    aioschedule.every().day.at('20:00').do(sender, dp=dp)
+    aioschedule.every().day.at('00:00').do(sender, dp=dp)
     while True:
         await aioschedule.run_pending()
 
