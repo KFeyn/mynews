@@ -59,7 +59,7 @@ async def get_articles_habr(links_global) -> tp.List[models.Article]:
                 rating = el.find('span', {'data-test-id': 'votes-meter-value'}).text,
                 date = datetime.datetime.strptime(el.find('time').get('title'), '%Y-%m-%d, %H:%M')
 
-                if link[0] not in links_global and (datetime.date.today() - date.date()).days in (0, 1, 2):
+                if link[0] not in links_global and (datetime.date.today() - date.date()).days in (-1, 0, 1):
                     data.append((link[0], rating[0], date))
                     links_global.append(link[0])
 
@@ -86,7 +86,7 @@ async def get_articles_tds(links_global) -> tp.List[models.Article]:
             date = datetime.datetime.strptime(str(datetime.datetime.now().year) + ' ' +
                                               article_soup.find('p', {'class': 'pw-published-date bn b bo bp co'}).text,
                                               '%Y %b %d')
-            if link not in links_global and (datetime.date.today() - date.date()).days in (0, 1, 2):
+            if link not in links_global and (datetime.date.today() - date.date()).days in (-1, 0, 1):
                 data.append((art, rating, date))
                 links_global.append(link)
 
