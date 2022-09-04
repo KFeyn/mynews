@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import typing as tp
 import datetime
 import os
+import re
 
 import models
 
@@ -78,13 +79,13 @@ async def get_articles_tds(links_global) -> tp.List[models.Article]:
         data = []
         for link in links:
             article = await session.get(link)
-            article_content = await article.read()
+            article_content = await article.text()
             article_soup = BeautifulSoup(article_content, 'html.parser')
 
-            rating = ''
+            rating = re.search('clapCount":(\d+)', article_content).group(1)
             art = link
             date = datetime.datetime.strptime(str(datetime.datetime.now().year) + ' ' +
-                                              article_soup.find('p', {'class': 'pw-published-date bn b bo bp co'}).text,
+                                              article_soup.find('p', {'class': re.compile(r'^pw-published-date')}).text,
                                               '%Y %b %d')
             if link not in links_global and (datetime.date.today() - date.date()).days in (-1, 0, 1):
                 data.append((art, rating, date))
